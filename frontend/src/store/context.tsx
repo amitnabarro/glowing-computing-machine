@@ -1,6 +1,7 @@
-import { Dispatch, createElement, createContext, useContext, useReducer, ReactNode, useMemo } from 'react'
-import { AnyAction, NewsState } from './types'
+import { createElement, createContext, useContext, ReactNode, useMemo } from 'react'
+import { AnyAction, ThunkDispatch, NewsState } from './types'
 import { reducer } from './reducers'
+import createReducer from './createReducer'
 
 const initialState: NewsState = {
   status: 'idle',
@@ -9,14 +10,14 @@ const initialState: NewsState = {
   keys: [],
 }
 
-const context = createContext<[NewsState, Dispatch<AnyAction>] | null>(null)
+const context = createContext<[NewsState, ThunkDispatch<NewsState, AnyAction>] | null>(null)
 context.displayName = `news context`
 
 const providerFactory = (props: any, children: ReactNode) => createElement(context.Provider, props, children)
 
 export const Provider = ({ children }: { children?: ReactNode }) => {
   try {
-    const [state, dispatch] = useReducer(reducer, initialState)
+    const [state, dispatch] = createReducer(initialState, reducer)
     const value = useMemo(() => [state, dispatch], [state, dispatch])
     return providerFactory({ value }, children)
   } catch (error) {

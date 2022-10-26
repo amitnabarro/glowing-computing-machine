@@ -1,4 +1,3 @@
-from aiohttp import ClientSession
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from config import init_db
@@ -19,12 +18,11 @@ app.add_middleware(
 @app.on_event("startup")
 async def startup_event():
   await init_db()
-  app.aiohttp_session = ClientSession()
-  await fetch_articles(app.aiohttp_session)
+  await fetch_articles('drones')
 
 @app.on_event("shutdown")
 async def shutdown_event():
-  await app.aiohttp_session.close()
+  pass
 
 app.include_router(router, prefix="/api")
 
